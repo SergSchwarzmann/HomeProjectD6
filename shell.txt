@@ -1,0 +1,86 @@
+from news.models import *
+# Create 2 users
+user1 = User.objects.create_user(username='NumberOne')
+user2 = User.objects.create_user(username='NumberTwo')
+# Assign users as authors
+Author.objects.create(author_user=user1)
+Author.objects.create(author_user=user2)
+# Create categories of themes
+Category.objects.create(category_name='SC')
+Category.objects.create(category_name='ED')
+Category.objects.create(category_name='IT')
+Category.objects.create(category_name='CU')
+# variables
+author = Author.objects.get(id=1)
+author2 = Author.objects.get(id=2)
+# Create posts and assign themes to them
+Post.objects.create(post_author=author, post_type='AR', post_name='Post1_Article_Name', post_value='SomeCoolTextForFirstArticle')
+Post.objects.create(post_author=author, post_type='AR', post_name='Post2_Article_Name', post_value='SomeCoolTextForSecondArticle')
+Post.objects.create(post_author=author2, post_type='NE', post_name='Post3_News_Name', post_value='SomeCoolTextForThirdPostNews')
+Post.objects.get(id=1).post_category.add(Category.objects.get(id=1))
+Post.objects.get(id=2).post_category.add(Category.objects.get(id=2))
+Post.objects.get(id=2).post_category.add(Category.objects.get(id=3))
+# Create comments to posts
+Comment.objects.create(comment_post=Post.objects.get(id=1), comment_author=Author.objects.get(id=1).author_user, comment_value='SomeNiceComment1')
+Comment.objects.create(comment_post=Post.objects.get(id=1), comment_author=Author.objects.get(id=2).author_user, comment_value='SomeNiceComment1_1') # for test purpose
+Comment.objects.create(comment_post=Post.objects.get(id=2), comment_author=Author.objects.get(id=2).author_user, comment_value='SomeBadComment2')
+Comment.objects.create(comment_post=Post.objects.get(id=3), comment_author=Author.objects.get(id=1).author_user, comment_value='SomeNiceComment3')
+Comment.objects.create(comment_post=Post.objects.get(id=3), comment_author=Author.objects.get(id=2).author_user, comment_value='SomeBadComment4')
+# add 2 likes to Comment_1
+Comment.objects.get(id=1).like()
+Comment.objects.get(id=1).like()
+# add 3 dislikes to Comment_2
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=2).dislike()
+Comment.objects.get(id=2).dislike()
+# add 1 dislike and 2 likes to Comment_3
+Comment.objects.get(id=3).dislike()
+Comment.objects.get(id=3).like()
+Comment.objects.get(id=3).like()
+# add 2 dislikes and 1 like to Comment_4
+Comment.objects.get(id=4).dislike()
+Comment.objects.get(id=4).dislike()
+Comment.objects.get(id=4).like()
+# add 3 likes and 1 dislike to Post_1
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).like()
+Post.objects.get(id=1).dislike()
+# add 2 likes and 2 dislikes to Post_2
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).like()
+Post.objects.get(id=2).dislike()
+Post.objects.get(id=2).dislike()
+# add 1 like and 3 dislikes to Post_3
+Post.objects.get(id=3).like()
+Post.objects.get(id=3).dislike()
+Post.objects.get(id=3).dislike()
+Post.objects.get(id=3).dislike()
+# update authors' ratings
+author.update_rating()
+author.author_rating # 9
+author2.update_rating()
+author2.author_rating # -10
+# sort authors by rating
+a = Author.objects.order_by('-author_rating')
+# print out username of the best authors and its rating
+a[0].author_user.username
+a[0].author_rating
+# sort posts by rating
+p = Post.objects.order_by('-post_rate')
+# print out date, author's username, rating, title and preview of the best post
+'{}.{}.{}'.format(p[0].post_datetime.day, p[0].post_datetime.month, p[0].post_datetime.year)
+p[0].post_author.author_user.username
+p[0].post_rate
+p[0].post_name
+p[0].preview()
+# print out all comments (with date, username, rating, text) to the best post
+c = Comment.objects.filter(comment_post=p[0])
+for i in c:
+    cdt = i.comment_datetime
+    '{}.{}.{}'.format(cdt.day, cdt.month, cdt.year)
+    i.comment_author.username
+    i.comment_rate
+    i.comment_value
+    print('-------------')
+

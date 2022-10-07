@@ -1,0 +1,14 @@
+{% extends "main.html" %}
+
+{% block content %}
+<a href="/posts/">All posts.</a>
+<h2>Page of authorized user {{ request.user.username }}</h2>
+<div>Some personal info for {{ request.user.username }}</div>
+
+<button><a href="sign/logout/">Exit</a></button>
+
+{% if is_not_author %}
+<button><a href="sign/be_author/">Want to be Author!</a></button>
+{% endif %}
+
+{% endblock content %}

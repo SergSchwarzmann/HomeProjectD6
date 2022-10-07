@@ -1,0 +1,72 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+    <h1 class="text-center">All posts</h1>
+<!--    <h3>Number of posts: {{ posts | length }}</h3>-->
+    <h3>{% current_time %}</h3>
+    <hr>
+    <form action="" method="get">
+        {{ filterset.form.as_p }}
+        <input type="submit" value="Find">
+    </form>
+<hr>
+<h3 class="text-center">Total: {{ page_obj.paginator.count }}</h3>
+<!--    <label for="news-time">Later than:</label>-->
+<!--    <input type="datetime-local" name="posted_after" value="" min="2022-01-01T00:00">-->
+    <hr>
+    {% if posts %}
+        <table style="width:600px; height:150px">
+            <tr>
+                <td><b>Name</b></td>
+                <td><b>Date</b></td>
+                <td><b>Category</b></td>
+                <td><b>Text</b></td>
+            </tr>
+
+            {% for post in posts %}
+            <tr>
+                <td>{{ post.post_name | nofoobar }}</td>
+                <td>{{ post.post_datetime | date:'d M Y' }}</td>
+                <td>
+<!--                    {{ post.post_category.name }}-->
+                    {% for cat in post.post_category.all %}
+                    {{ cat.category_name }}
+                    {% endfor %}
+                </td>
+                <td>{{ post.post_value | truncatechars:20 | nofoobar }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>No posts</h2>
+    {% endif %}
+
+<!--Pagination-->
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+<!--    {{ posts }}-->
+{% endblock content %}

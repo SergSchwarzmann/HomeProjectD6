@@ -1,0 +1,67 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Posts
+{% endblock title %}
+
+{% block content %}
+    <h1 class="text-center">All posts</h1>
+    <h3>{% current_time %}</h3>
+    <h3 class="text-center">Total: {{ page_obj.paginator.count }}</h3>
+    <a href="/posts/">All posts.</a>
+    <hr>
+    {% if category_news_list %}
+        <table style="width:600px; height:150px">
+            <tr>
+                <td><b>Name</b></td>
+                <td><b>Date</b></td>
+                <td><b>Category</b></td>
+                <td><b>Text</b></td>
+            </tr>
+
+            {% for post in category_news_list %}
+            <tr>
+                <td>{{ post.post_name | nofoobar }}</td>
+                <td>{{ post.post_datetime | date:'d M Y' }}</td>
+                <td>
+<!--                    {{ post.post_category.name }}-->
+                    {% for cat in post.post_category.all %}
+                    <a href="{% url 'category_list' post_category.id %}">{{ cat.category_name }}</a>
+                    {% endfor %}
+                </td>
+                <td>{{ post.post_value | truncatechars:20 | nofoobar }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>No posts</h2>
+    {% endif %}
+
+    {% if is_not_subscriber %}
+        <p class="text-center"><a href="{% url 'subscribe' post_category.id %}" class="btn btn-secondary btn-sm">Subscribe!</a> </p>
+    {% endif%}
+<!--Pagination-->
+
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            ...
+            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+
+<!--    {{ posts }}-->
+{% endblock content %}
